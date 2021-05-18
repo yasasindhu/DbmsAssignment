@@ -1,0 +1,14 @@
+CREATE DEFINER = CURRENT_USER TRIGGER `mydb`.`customer_ticket_AFTER_INSERT` AFTER INSERT ON `customer_ticket` FOR EACH ROW
+SET @reservseq = 0;
+SET @unreservseq=0;
+SET @seat_num=0;
+BEGIN
+IF ((select ticket_status where idticket=new.idticket)=null) THEN
+    insert into reserve_ticket values(@reservseq,80,new.idcustomer,@seat_num,new.train_idtrian);
+    SET NEW.reservseq = (@reservseq + 1);
+    SET NEW.seat_num = (@seat_num + 1);
+else
+	insert into unreserved_ticket values(@unreservseq,new.idcustomer);
+    SET NEW.unreservseq = (@unreservseq + 1);
+END IF;	
+END
